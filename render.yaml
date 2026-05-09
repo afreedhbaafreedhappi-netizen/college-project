@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: classroom-monitoring-system
+    name: classroom-monitor
     runtime: node
     plan: free
     buildCommand: npm install
@@ -9,8 +9,8 @@ services:
       - key: PORT
         value: 10000
       - key: MONGODB_URI
-        sync: false
+        value: mongodb+srv://afreedhbaafreedhappi_db_user:Afreedh123@cluster0.zf3gpng.mongodb.net/classroom_monitoring?retryWrites=true&w=majority
       - key: JWT_SECRET
-        sync: false
+        value: your_super_secret_jwt_key_2024
       - key: JWT_EXPIRE
         value: 7d
