@@ -3,13 +3,12 @@ const jwt = require('jsonwebtoken');
 
 // Generate JWT Token
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE
+    return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback_secret', {
+        expiresIn: process.env.JWT_EXPIRE || '7d'
     });
 };
 
-// @desc    Register Student
-// @route   POST /api/auth/register/student
+// Register Student
 exports.registerStudent = async (req, res) => {
     try {
         const { name, rollNumber, department, email, password } = req.body;
@@ -20,6 +19,14 @@ exports.registerStudent = async (req, res) => {
             return res.status(400).json({ success: false, message: 'User already exists' });
         }
         
+        // Get voice sample path
+        let voiceSamplePath = '';
+        if (req.file) {
+            voiceSamplePath = req.file.path;
+        } else {
+            return res.status(400).json({ success: false, message: 'Voice sample is required' });
+        }
+        
         // Create user
         const user = await User.create({
             name,
@@ -28,7 +35,7 @@ exports.registerStudent = async (req, res) => {
             role: 'student',
             rollNumber,
             department,
-            voiceSamplePath: req.file ? req.file.path : 'sample.mp3'
+            voiceSamplePath: voiceSamplePath
         });
         
         res.status(201).json({
@@ -47,8 +54,7 @@ exports.registerStudent = async (req, res) => {
     }
 };
 
-// @desc    Register Lecturer
-// @route   POST /api/auth/register/lecturer
+// Register Lecturer
 exports.registerLecturer = async (req, res) => {
     try {
         const { name, employeeId, email, password } = req.body;
@@ -81,8 +87,7 @@ exports.registerLecturer = async (req, res) => {
     }
 };
 
-// @desc    Login User
-// @route   POST /api/auth/login
+// Login
 exports.login = async (req, res) => {
     try {
         const { email, password, role } = req.body;
@@ -108,8 +113,7 @@ exports.login = async (req, res) => {
     }
 };
 
-// @desc    Get Current User
-// @route   GET /api/auth/me
+// Get Current User
 exports.getMe = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
