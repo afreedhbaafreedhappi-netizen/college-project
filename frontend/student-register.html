@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration | AI Classroom Monitor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-user-plus" style="font-size: 3rem; color: var(--neon-cyan); margin-bottom: 1rem;"></i>
+                <h2>Student Registration</h2>
+                <p>Join the AI-powered classroom</p>
+            </div>
+            
+            <div id="alert" class="alert"></div>
+            
+            <form id="student-register-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="John Doe">
+                </div>
+                
+                <div class="form-group">
+                    <label for="rollNumber">Roll Number</label>
+                    <input type="text" id="rollNumber" name="rollNumber" required placeholder="CS2024001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <select id="department" name="department" required>
+                        <option value="">Select Department</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="student@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Minimum 6 characters">
+                </div>
+                
+                <div class="form-group">
+                    <label for="voiceSample">Voice Sample (for voice recognition)</label>
+                    <div class="file-input-wrapper">
+                        <div class="file-label">
+                            <i class="fas fa-microphone"></i>
+                            <span>Choose audio file (MP3/WAV)</span>
+                        </div>
+                        <input type="file" id="voiceSample" name="voiceSample" accept="audio/*" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <a href="student-login.html">Login here</a></p>
+                <p><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/auth.js"></script>
+</body>
+</html>

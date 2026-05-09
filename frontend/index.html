@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Classroom Monitor | Intelligent Disturbance Detection System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Modal Styles - Add this to your style.css or keep here */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .auth-modal-content {
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .auth-modal-content i {
+            font-size: 4rem;
+            color: var(--neon-cyan);
+            margin-bottom: 1rem;
+        }
+        
+        .auth-modal-content h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .auth-modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .modal-btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+        }
+        
+        .modal-btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+            color: white;
+        }
+        
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: white;
+        }
+        
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+        
+        .modal-btn-secondary:hover {
+            transform: translateY(-2px);
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--neon-cyan);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: var(--neon-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-brain neon-icon"></i>
+                <span class="logo-text">AI<span class="highlight">Monitor</span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About System</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <button onclick="checkAuthAndRedirect('student')" class="btn-outline">
+                    <i class="fas fa-user-graduate"></i> Student Dashboard
+                </button>
+                <button onclick="checkAuthAndRedirect('lecturer')" class="btn-primary">
+                    <i class="fas fa-chalkboard-teacher"></i> Lecturer Dashboard
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Required Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <i class="fas fa-lock"></i>
+            <h2 id="modalTitle">Login Required</h2>
+            <p id="modalMessage">Please login or register to access the dashboard</p>
+            <div class="modal-buttons">
+                <button onclick="redirectToLogin()" class="modal-btn modal-btn-primary" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button onclick="redirectToRegister()" class="modal-btn modal-btn-secondary" id="registerBtn">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <div class="badge">
+                    <i class="fas fa-microphone-alt"></i>
+                    <span>AI-Powered Classroom Intelligence</span>
+                </div>
+                <h1 class="hero-title">
+                    Intelligent Classroom Disturbance Detection
+                </h1>
+                <p class="hero-subtitle">
+                    Harness the power of artificial intelligence to monitor, analyze, and optimize classroom dynamics.
+                    Real-time voice analysis with advanced disturbance scoring system.
+                </p>
+                <div class="hero-buttons">
+                    <button onclick="checkAuthAndRedirect('student')" class="btn-glow">
+                        <i class="fas fa-user-graduate"></i>
+                        Student Dashboard
+                    </button>
+                    <button onclick="checkAuthAndRedirect('lecturer')" class="btn-glass">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        Lecturer Dashboard
+                    </button>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-number">98.5%</div>
+                    <div class="stat-label">Detection Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">&lt;1s</div>
+                    <div class="stat-label">Real-time Response</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Continuous Monitoring</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="section-header">
+                <h2>Cutting-Edge Features</h2>
+                <p>Revolutionize classroom management with AI-driven insights</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-waveform"></i>
+                    </div>
+                    <h3>Real-time Voice Analysis</h3>
+                    <p>Advanced audio processing algorithms detect and analyze student voice patterns in real-time with 98.5% accuracy.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Disturbance Scoring</h3>
+                    <p>Proprietary algorithm calculates disturbance scores based on interruptions, duration, and volume levels.</p>
+                    <div class="formula-badge">
+                        <small>Score = (Interruptions × 5) + (Duration × 2) + (Volume × 3)</small>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Automated Reports</h3>
+                    <p>Generate comprehensive reports identifying key patterns, most/least disturbing students, and engagement metrics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Interactive visualizations including pie charts, bar graphs, and line charts for data-driven decisions.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <div class="about-container">
+                <div class="about-content">
+                    <h2>How It Works</h2>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">01</div>
+                            <h3>Voice Sample Collection</h3>
+                            <p>Students upload voice samples during registration for voice pattern recognition.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">02</div>
+                            <h3>Real-time Monitoring</h3>
+                            <p>AI analyzes classroom audio for talking duration, interruptions, and volume levels.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">03</div>
+                            <h3>Disturbance Calculation</h3>
+                            <p>Dynamic scoring system calculates individual student disturbance scores.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">04</div>
+                            <h3>Report Generation</h3>
+                            <p>Automatic reports with actionable insights for classroom management.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>AI Classroom Monitor</h3>
+                <p>Intelligent Education Solutions for Modern Classrooms</p>
+            </div>
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AI Classroom Monitor | Powered by Artificial Intelligence</p>
+        </div>
+    </footer>
+
+    <script>
+        // Check if user is authenticated
+        function isAuthenticated() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            return !!(token && user.role);
+        }
+
+        // Get current user
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('user') || '{}');
+        }
+
+        // Check authentication and redirect
+        function checkAuthAndRedirect(role) {
+            if (isAuthenticated()) {
+                const user = getCurrentUser();
+                if (user.role === role) {
+                    // Already logged in with correct role
+                    if (role === 'lecturer') {
+                        window.location.href = 'lecturer-dashboard.html';
+                    } else {
+                        window.location.href = 'student-dashboard.html';
+                    }
+                } else {
+                    // Logged in but wrong role
+                    showAuthModal(
+                        `Wrong Account!`, 
+                        `You are logged in as a ${user.role}. Please logout and login as ${role} to access this dashboard.`,
+                        role
+                    );
+                }
+            } else {
+                // Not logged in - show modal
+                showAuthModal(
+                    `${role === 'lecturer' ? 'Lecturer' : 'Student'} Login Required`,
+                    `Please login or register as a ${role} to access the ${role} dashboard.`,
+                    role
+                );
+            }
+        }
+
+        // Show authentication modal
+        function showAuthModal(title, message, role) {
+            const modal = document.getElementById('authModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            
+            // Set redirect targets
+            loginBtn.onclick = () => {
+                window.location.href = role === 'lecturer' ? 'lecturer-login.html' : 'student-login.html';
+            };
+            
+            registerBtn.onclick = () => {
+                window.location.href = role === 'lecturer' ? 'lecturer-register.html' : 'student-register.html';
+            };
+            
+            modal.style.display = 'flex';
+        }
+
+        // Close modal
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        // Redirect functions
+        function redirectToLogin() {
+            // This will be overridden by the button onclick
+        }
+
+        function redirectToRegister() {
+            // This will be overridden by the button onclick
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('authModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | AI Classroom Monitor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Additional student dashboard styles */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .feedback-card {
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .feedback-card:hover {
+            border-color: var(--neon-cyan);
+            transform: translateY(-5px);
+        }
+        
+        .feedback-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--neon-cyan);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-good {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+        
+        .status-warning {
+            background: rgba(255, 170, 0, 0.2);
+            border: 1px solid #ffaa00;
+            color: #ffaa00;
+        }
+        
+        .status-bad {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+            color: #ff6666;
+        }
+        
+        .advice-list {
+            margin-top: 1rem;
+        }
+        
+        .advice-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .advice-item i {
+            color: var(--neon-cyan);
+            font-size: 0.8rem;
+        }
+        
+        .session-history-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .session-history-item:hover {
+            background: rgba(0, 243, 255, 0.05);
+        }
+        
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 5px var(--neon-green); }
+            50% { box-shadow: 0 0 20px var(--neon-green); }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <!-- Dashboard Content (shown only after authentication) -->
+    <div id="dashboard-content" style="display: none;">
+        <!-- Navigation -->
+        <nav class="glass-nav">
+            <div class="nav-container">
+                <div class="logo">
+                    <i class="fas fa-brain neon-icon"></i>
+                    <span class="logo-text">AI<span class="highlight">Monitor</span></span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#" class="active" onclick="return false;">My Dashboard</a></li>
+                    <li><a href="#" onclick="return false;">My Performance</a></li>
+                    <li><a href="#" onclick="return false;">History</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    <button onclick="logout()" class="btn-outline">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero" style="min-height: auto; padding-top: 100px;">
+            <div class="hero-content">
+                <div class="badge">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Student Portal</span>
+                </div>
+                <h1 class="hero-title">
+                    Welcome, <span id="student-name" class="gradient-text">Student</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Track your classroom participation and get AI-powered insights to improve your learning behavior.
+                </p>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="features" style="padding-top: 2rem;">
+            <div class="section-header">
+                <h2>Your Performance Dashboard</h2>
+                <p>Real-time analytics of your classroom behavior</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-value" id="disturbance-score">0</div>
+                    <div class="stat-label">Your Disturbance Score</div>
+                    <div class="progress-bar" style="margin-top: 10px;">
+                        <div class="progress-fill" id="score-progress" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="stat-value" id="class-rank">-</div>
+                    <div class="stat-label">Class Rank</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-bell"></i></div>
+                    <div class="stat-value" id="total-interruptions">0</div>
+                    <div class="stat-label">Total Interruptions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-microphone"></i></div>
+                    <div class="stat-value" id="speaking-time">0s</div>
+                    <div class="stat-label">Speaking Duration</div>
+                </div>
+            </div>
+
+            <!-- Performance Charts -->
+            <div class="performance-grid">
+                <div class="feedback-card">
+                    <h3><i class="fas fa-chart-pie"></i> Your Disturbance Breakdown</h3>
+                    <canvas id="student-pie-chart" style="max-height: 250px;"></canvas>
+                </div>
+                
+                <div class="feedback-card">
+                    <h3><i class="fas fa-chart-line"></i> Your Performance Trend</h3>
+                    <canvas id="student-trend-chart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+
+            <!-- AI Feedback Section -->
+            <div class="performance-grid">
+                <div class="feedback-card">
+                    <h3><i class="fas fa-robot"></i> AI Behavior Analysis</h3>
+                    <div id="ai-feedback">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="behavior-score" style="width: 75%;"></div>
+                        </div>
+                        <p id="behavior-message">Your behavior is good! Keep it up!</p>
+                    </div>
+                    <div class="advice-list" id="advice-list"></div>
+                </div>
+                
+                <div class="feedback-card">
+                    <h3><i class="fas fa-history"></i> Recent Session History</h3>
+                    <div id="session-history">
+                        <div class="session-history-item">
+                            <span>Loading sessions...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Improvement Tips -->
+            <div class="performance-grid">
+                <div class="feedback-card">
+                    <h3><i class="fas fa-lightbulb"></i> AI Improvement Tips</h3>
+                    <ul class="advice-list" id="improvement-tips">
+                        <li class="advice-item"><i class="fas fa-check-circle"></i> Maintain respectful noise levels in class</li>
+                        <li class="advice-item"><i class="fas fa-check-circle"></i> Avoid unnecessary interruptions during lectures</li>
+                        <li class="advice-item"><i class="fas fa-check-circle"></i> Participate actively but respectfully</li>
+                    </ul>
+                </div>
+                
+                <div class="feedback-card">
+                    <h3><i class="fas fa-chart-simple"></i> Weekly Summary</h3>
+                    <div id="weekly-summary">
+                        <p>Disturbance Score Trend: <span id="weekly-trend">-</span></p>
+                        <p>Improvement Rate: <span id="improvement-rate">-</span></p>
+                        <p>Class Standing: <span id="class-standing">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer style="margin-top: 3rem;">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>AI Classroom Monitor</h3>
+                    <p>Intelligent Education Solutions for Modern Classrooms</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" onclick="return false;">Privacy Policy</a>
+                    <a href="#" onclick="return false;">Terms of Use</a>
+                    <a href="#" onclick="return false;">Help</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AI Classroom Monitor | Powered by Artificial Intelligence</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Login Required Message (shown if not authenticated) -->
+    <div id="login-required" class="auth-container" style="display: flex;">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-lock" style="font-size: 3rem; color: var(--neon-cyan);"></i>
+                <h2>Access Restricted</h2>
+                <p>Please login as Student to access your dashboard</p>
+            </div>
+            <div class="hero-buttons" style="flex-direction: column;">
+                <a href="student-login.html" class="btn-glow">
+                    <i class="fas fa-user-graduate"></i> Student Login
+                </a>
+                <a href="index.html" class="btn-glass">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/student-dashboard.js"></script>
+</body>
+</html>
