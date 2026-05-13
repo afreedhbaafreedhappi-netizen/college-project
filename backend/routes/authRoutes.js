@@ -11,6 +11,7 @@ const router = express.Router();
 const uploadDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
+    console.log('📁 Uploads directory created at:', uploadDir);
 }
 
 // Configure multer for audio uploads
@@ -35,7 +36,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter: fileFilter
 });
 

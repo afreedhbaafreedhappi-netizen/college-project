@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
+const path = require('path');
 const User = require('../models/User');
+
+// Load dotenv with path
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
 const protect = async (req, res, next) => {
     let token;
@@ -7,7 +11,7 @@ const protect = async (req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'my_jwt_secret_key_2024');
             req.user = await User.findById(decoded.id).select('-password');
             next();
         } catch (error) {

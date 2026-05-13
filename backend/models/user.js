@@ -25,23 +25,21 @@ const userSchema = new mongoose.Schema({
         enum: ['student', 'lecturer'],
         required: true
     },
-    // Student specific fields
     rollNumber: {
         type: String,
-        required: function() { return this.role === 'student'; }
+        default: null
     },
     department: {
         type: String,
-        required: function() { return this.role === 'student'; }
+        default: null
     },
     voiceSamplePath: {
         type: String,
-        required: function() { return this.role === 'student'; }
+        default: null
     },
-    // Lecturer specific fields
     employeeId: {
         type: String,
-        required: function() { return this.role === 'lecturer'; }
+        default: null
     },
     createdAt: {
         type: Date,
@@ -52,13 +50,14 @@ const userSchema = new mongoose.Schema({
 // Encrypt password using bcrypt
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
-        next();
+        return next();
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+    next();
 });
 
-// Match user entered password to hashed password in database
+// Match user entered password to hashed password
 userSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
